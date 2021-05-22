@@ -1,8 +1,12 @@
 package models
 
 import org.joda.time.DateTime
-import play.api.libs.json.{ Format, Json }
+import play.api.libs.json.{ Json, OFormat }
+import reactivemongo.play.json._
+import reactivemongo.bson.BSONObjectID
 import reactivemongo.bson._
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 
 case class Blog(
     id: Option[BSONObjectID],
@@ -14,7 +18,7 @@ case class Blog(
 
 object Blog {
   // Format macro will inspect the Blog case class fields and produce a JSON
-  implicit val blogFormat: Format[Blog] = Json.format[Blog]
+  implicit val blogFormat: OFormat[Blog] = Json.format[Blog]
 
   // For BSON, however, we’re implementing our custom serializer since it has
   // external types like DateTime, needs serializers as implicit.
