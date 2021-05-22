@@ -13,8 +13,11 @@ case class Blog(
 )
 
 object Blog {
+  // Format macro will inspect the Blog case class fields and produce a JSON
   implicit val blogFormat: Format[Blog] = Json.format[Blog]
 
+  // For BSON, however, we’re implementing our custom serializer since it has
+  // external types like DateTime, needs serializers as implicit.
   implicit object BlogBSONReader extends BSONDocumentReader[Blog] {
     override def read(bson: BSONDocument): Blog = {
       Blog(
