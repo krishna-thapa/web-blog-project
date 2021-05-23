@@ -52,6 +52,15 @@ trait CRUDRepository[T <: WithDate] extends Logging {
     )
   }
 
+  // Update the blog post
+  def update(id: BSONObjectID, blog: T)(
+      implicit conWrite: BSONDocumentWriter[T]
+  ): Future[WriteResult] = {
+    collection.flatMap(
+      _.update(ordered = false).one(BSONDocument("_id" -> id), blog)
+    )
+  }
+
   // Delete the blog post
   def delete(id: BSONObjectID): Future[WriteResult] = {
     collection.flatMap(

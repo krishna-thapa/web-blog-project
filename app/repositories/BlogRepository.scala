@@ -34,4 +34,15 @@ class BlogRepository @Inject()(
       )
     )
   }
+
+  def updateBlog(currentBlog: Blog, blogPostForm: BlogPostForm): Future[WriteResult] = {
+    update(
+      currentBlog._id,
+      currentBlog.copy(
+        title = blogPostForm.title,
+        blogPost = blogPostForm.blogPost,
+        updatedDate = currentDateTimeMilli
+      )
+    )
+  }
 }

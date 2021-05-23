@@ -1,6 +1,6 @@
 package services
 
-import forms.BlogPostForm
+import forms.{ BlogPostForm, UpdateBlogForm }
 import models.Blog.laxJsonWriter
 import play.api.libs.json.{ JsObject, Json }
 import play.api.mvc.Result
@@ -40,6 +40,20 @@ class BlogService @Inject()(
       .createBlog(blogPostForm)
       .map { result =>
         Created(s"Response with created record number: ${result.n}")
+      }
+  }
+
+  def updateBlogService(objectId: BSONObjectID, updateBlogForm: UpdateBlogForm): Future[Result] = {
+    blogRepository
+      .findOne(objectId)
+      .flatMap {
+        _.fold(Future.successful(NotFound("Database is empty!"))) { currentBlog =>
+          blogRepository
+            .updateBlog(currentBlog, updateBlogForm.blogPostForm)
+            .map { response =>
+              Ok(Json.toJson(response.n))
+            }
+        }
       }
   }
 
