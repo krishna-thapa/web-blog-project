@@ -1,8 +1,8 @@
 package models
 
-import org.joda.time.DateTime
+import reactivemongo.api.bson.BSONDateTime
 
-trait WithDate {
-  def createdDate: Option[DateTime]
-  def updatedDate: Option[DateTime]
+trait WithDate extends BlogId {
+  def createdDate: BSONDateTime
+  def updatedDate: BSONDateTime
 }

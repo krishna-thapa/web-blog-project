@@ -3,10 +3,9 @@ package repositories
 import models.WithDate
 import play.api.Logging
 import play.modules.reactivemongo.ReactiveMongoApi
-import reactivemongo.api.{ Cursor, ReadPreference }
+import reactivemongo.api.Cursor
 import reactivemongo.api.bson.{ BSONDocument, BSONDocumentReader, BSONDocumentWriter }
 import reactivemongo.api.bson.collection.BSONCollection
-import reactivemongo.api.bson.compat._
 import reactivemongo.api.commands.WriteResult
 import reactivemongo.api.bson.BSONObjectID
 
@@ -32,8 +31,7 @@ trait CRUDRepository[T <: WithDate] extends Logging {
   ): Future[Seq[T]] = collection.flatMap(
     _.find(BSONDocument(), Option.empty[T])
       .sort(BSONDocument("createdDate" -> -1))
-      //noinspection
-      .cursor[T]() //noinspection
+      .cursor[T]()
       .collect[Seq](blogsLimit, Cursor.FailOnError[Seq[T]]())
   )
 

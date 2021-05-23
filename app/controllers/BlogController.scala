@@ -1,11 +1,13 @@
 package controllers
 
 import forms.BlogPostForm
-import play.api.libs.json.{ JsValue, Json }
-import play.api.mvc.{ Action, AnyContent, BaseController, ControllerComponents, Request }
+import models.Blog.laxJsonWriter
+import play.api.libs.json.{ JsObject, JsValue, Json }
+import play.api.mvc._
 import reactivemongo.api.bson.BSONObjectID
+import reactivemongo.play.json.compat.bson2json.fromDocumentWriter
+import reactivemongo.play.json.compat.json2bson.toDocumentWriter
 import repositories.BlogRepository
-import reactivemongo.api.bson.compat._
 import utils.FutureErrorHandler.ErrorRecover
 import utils.Logging
 
@@ -26,7 +28,9 @@ class BlogController @Inject()(
 
     blogRepository.findAll.map {
       case Seq() => NotFound("Database is empty!")
-      case blogs => Ok(Json.toJson(blogs.sortBy(_.createdDate).reverse))
+      case blogs =>
+        val jsObjects: Seq[JsObject] = blogs.map(blog => laxJsonWriter.writes(blog))
+        Ok(Json.toJson(jsObjects))
     }.errorRecover
   }
 
@@ -39,7 +43,8 @@ class BlogController @Inject()(
           blogRepository
             .findOne(objectId)
             .map { blog =>
-              blog.fold(NotFound("Database is empty!"))(b => Ok(Json.toJson(b)))
+              blog
+                .fold(NotFound("Database is empty!"))(b => Ok(Json.toJson(laxJsonWriter.writes(b))))
             }
             .errorRecover
         case Failure(exception) =>

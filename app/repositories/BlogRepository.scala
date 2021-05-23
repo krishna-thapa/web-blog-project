@@ -5,7 +5,7 @@ import models.Blog
 import org.joda.time.DateTime
 import play.api.Configuration
 import play.modules.reactivemongo.ReactiveMongoApi
-import reactivemongo.api.bson.compat._
+import reactivemongo.api.bson.{ BSONDateTime, BSONObjectID }
 import reactivemongo.api.commands.WriteResult
 
 import javax.inject.{ Inject, Singleton }
@@ -21,14 +21,16 @@ class BlogRepository @Inject()(
   override def mongoDBName: String = config.get[String]("mongodb.dbName")
   override def blogsLimit: Int     = config.get[Int]("mongodb.limit")
 
+  val currentDateTimeMilli: BSONDateTime = BSONDateTime(new DateTime().getMillis)
+
   def createBlog(request: BlogPostForm): Future[WriteResult] = {
     create(
       Blog(
-        None,
+        BSONObjectID.generate(),
         request.title,
         request.blogPost,
-        createdDate = Some(new DateTime()),
-        updatedDate = Some(new DateTime())
+        createdDate = currentDateTimeMilli,
+        updatedDate = currentDateTimeMilli
       )
     )
   }
