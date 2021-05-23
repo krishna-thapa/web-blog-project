@@ -9,9 +9,18 @@ In addition to performing standard CRUD operations, it also supports querying th
 
 ### Resources
 - [Reactive Scala Driver for MongoDB for Play](http://reactivemongo.org/releases/1.0/documentation/tutorial/play.html)
+- [testcontainers-scala for MongoDb](https://github.com/testcontainers/testcontainers-scala)
+- [Play framework](https://www.playframework.com/)
+- [Introduction to Reactive Mongo](https://www.baeldung.com/scala/mongo-reactive-intro)
+
+### Online example projects
+- [play-framework-blog in Java](https://github.com/reljicd/play-framework-blog)
+- [Full stack ScalaBlog, but old](https://github.com/kairos34/ScalaBlog)
+- [scala-play-blog with Web socket example](https://github.com/mykisscool/scala-play-blog)
+- [play-mongo based on this project](https://github.com/smahjoub/play-mongo)
+- [Official reactivemongo-demo-app](https://github.com/ReactiveMongo/reactivemongo-demo-app)
 
 ### Technologies used
-
 - Scala 2.13
 - Sbt 1.13
 - Play 2.8
@@ -56,6 +65,21 @@ db.person.stats()
 ```
 
 ### About the web project
-
 - Build a simple initial point for the blog application
 - Should have a CRUD operation for the project
+
+## Know issues
+1. Disable auto clean-up imports in Intellij for this project
+  - Look for the release note for this version of [ReactiveMongo 0.20.13](http://reactivemongo.org/releases/0.1x/documentation/release-details.html)
+  - Following imports should be in the model class
+```
+# Used for the JSON/BSON conversion
+import reactivemongo.play.json._
+
+# Used for the Joda DateTime to BSON type conversion 
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
+```
+2. At the moment, if the docker container of MongoDb is initialized with the username and password, then the ReactiveMongo won't connect even using the required url.
+Might need to look into more, see the document regarding [connection](http://reactivemongo.org/releases/1.0/documentation/tutorial/connect-database.html). 
+   Hence, the environment variables for username and password are disabled in the docker-compose file.

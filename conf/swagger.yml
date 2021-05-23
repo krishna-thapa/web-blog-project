@@ -1,0 +1,15 @@
+---
+swagger: "2.0"
+info:
+  title: "Web-Blog-project-API"
+  description: "API for the web blog back-end project"
+  contact:
+    email: krishna.nature91@gmail.com
+  license:
+    name: Web-blog-project
+    url: https://github.com/krishna-thapa
+  version: 1.0.0
+consumes:
+  - application/json
+produces:
+  - application/json

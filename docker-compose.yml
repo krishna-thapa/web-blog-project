@@ -2,17 +2,16 @@ version: '3.8'
 
 services:
   mongodb:
-    image: mongo:4.0
+    image: mongo
     container_name: mongodb
     restart: always
     ports:
       - 27017:27017
     volumes:
       - data:/data
-    environment:
+#    environment:
 #      - MONGO_INITDB_ROOT_USERNAME=rootuser
 #      - MONGO_INITDB_ROOT_PASSWORD=rootpass
-      - MONGO_INITDB_DATABASE=blogs
   mongo-express:
     image: mongo-express
     container_name: mongo-express

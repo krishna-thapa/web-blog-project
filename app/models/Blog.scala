@@ -1,12 +1,11 @@
 package models
 
 import org.joda.time.DateTime
-import play.api.libs.json.{ Json, OFormat }
-import reactivemongo.play.json._
-import reactivemongo.bson.BSONObjectID
-import reactivemongo.bson._
-import play.api.libs.json.JodaWrites._
 import play.api.libs.json.JodaReads._
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.{ Json, OFormat }
+import reactivemongo.bson.{ BSONObjectID, _ }
+import reactivemongo.play.json._
 
 case class Blog(
     id: Option[BSONObjectID],

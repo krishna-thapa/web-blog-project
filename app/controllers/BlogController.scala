@@ -4,6 +4,7 @@ import models.Blog
 import play.api.libs.json.{ JsValue, Json }
 import play.api.mvc.{ Action, AnyContent, BaseController, ControllerComponents, Request }
 import repositories.BlogRepository
+import reactivemongo.api.bson.compat._
 
 import javax.inject.{ Inject, Singleton }
 import scala.concurrent.{ ExecutionContext, Future }

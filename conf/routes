@@ -5,14 +5,33 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index
 # An example controller showing how to use dependency injection
+### NoDocs ###
 GET     /count                      controllers.CountController.count
 # An example controller showing how to write asynchronous code
+### NoDocs ###
 GET     /message                    controllers.AsyncController.message
 
 # Map static resources from the /public folder to the /assets URL path
+### NoDocs ###
 GET     /assets/*file               controllers.Assets.versioned(file)
 
+### NoDocs ###
+GET   /docs/swagger-ui/*file        controllers.Assets.at(path:String="/public/lib/swagger-ui", file:String)
 
 # Blog post with MongoDb
+
+###
+#  summary: Get all the blogs from the MongoDb collections(limit of 10)
+#  description: >
+#   Response from MongoSb is limited to size 10 at the moment.
+#  tags:
+#    - Blog
+#  responses:
+#    200:
+#      description: success
+#      schema:
+#        $ref: '#/definitions/models.Blog'
+###
 GET     /blog                       controllers.BlogController.getAllBlogs
+
 POST    /blog                       controllers.BlogController.createNewBlog
