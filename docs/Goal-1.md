@@ -2,6 +2,16 @@
 
 1. Build an asynchronous & non-blocking REST application using the Play framework and reactive mongo plugin
 2. Basic API that allows us to perform the basic CRUD operations for the data stored in a mongo database.
+3. Use the docker compose file to build and run the containers for mongoDb and mongo express to view database content in UI
+4. Implement Swagger API management tool to perform all the endpoints operation 
+5. Implement test-container dependency to create test suite cases using docker container for mongo
+
+### Future ideas to implement
+- Add simple JWT authorization layer
+- Add comment functionality using Play web socket
+- Each blog can have title image background that need to be stored in mongo as GridFS
+- Start Front-end project using Vue3 and Typescript 
+- Added a simple github action job to test when merged to master
 
 ### About ReactiveMongo
 [ReactiveMongo](http://reactivemongo.org/) is an asynchronous and non-blocking Scala driver for MongoDB. 
