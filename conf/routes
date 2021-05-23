@@ -39,6 +39,26 @@ GET   /docs/swagger-ui/*file        controllers.Assets.at(path:String="/public/l
 GET     /blog                       controllers.BlogController.getAllBlogs
 
 ###
+#  summary: Get the selected blog from the database
+#  description: >
+#   Have to send the valid blog id to select the right one
+#  tags:
+#    - Blog
+#  responses:
+#    200:
+#      description: success
+#      schema:
+#        $ref: '#/definitions/models.Blog'
+#    400:
+#      description: Bad request (have to be in validated blog id)
+#    404:
+#      description: empty resposne from database
+#    500:
+#      description: internal server error (connection issues)
+###
+GET     /blog/:id                   controllers.BlogController.getSelectedBlog(id: String)
+
+###
 #  summary: Post a new blog post to the MongoDb database under "blogs" collection
 #  description: >
 #   Will be store under the collection names "blogs"

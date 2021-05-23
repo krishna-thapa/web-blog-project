@@ -12,7 +12,7 @@ object BlogPostForm {
   val blogPostForm: Form[BlogPostForm] = Form {
     mapping(
       "title"    -> nonEmptyText.verifying(_.nonEmpty),
-      "blogPost" -> text
+      "blogPost" -> text.verifying(_.nonEmpty)
     )(BlogPostForm.apply)(BlogPostForm.unapply)
   }
 }
