@@ -23,7 +23,7 @@ GET   /docs/swagger-ui/*file        controllers.Assets.at(path:String="/public/l
 ###
 #  summary: Get all the blogs from the MongoDb collections(limit of 10)
 #  description: >
-#   Response from MongoSb is limited to size 10 at the moment.
+#   Response from MongoDb is limited to size 10 at the moment.
 #  tags:
 #    - Blog
 #  responses:
@@ -31,7 +31,34 @@ GET   /docs/swagger-ui/*file        controllers.Assets.at(path:String="/public/l
 #      description: success
 #      schema:
 #        $ref: '#/definitions/models.Blog'
+#    404:
+#      description: empty resposne from database
+#    500:
+#      description: internal server error (connection issues)
 ###
 GET     /blog                       controllers.BlogController.getAllBlogs
 
+###
+#  summary: Post a new blog post to the MongoDb database under "blogs" collection
+#  description: >
+#   Will be store under the collection names "blogs"
+#  tags:
+#    - Blog
+#  parameters:
+#    - name: body
+#      in: body
+#      required: true
+#      description: New blog post form
+#      schema:
+#        $ref: '#/definitions/models.Blog'
+#  responses:
+#    200:
+#      description: success
+#      schema:
+#        $ref: '#/definitions/models.Blog'
+#    400:
+#      description: Bad request (have to be in validated form request)
+#    500:
+#      description: internal server error (connection issues)
+###
 POST    /blog                       controllers.BlogController.createNewBlog

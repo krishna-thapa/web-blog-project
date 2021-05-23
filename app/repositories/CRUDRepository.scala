@@ -22,12 +22,13 @@ trait CRUDRepository[T] {
   }
 
   def findAll(
-      limit: Int = blogsLimit
-  )(implicit conWrite: BSONDocumentWriter[T], conRead: BSONDocumentReader[T]): Future[Seq[T]] = {
+      implicit conWrite: BSONDocumentWriter[T],
+      conRead: BSONDocumentReader[T]
+  ): Future[Seq[T]] = {
     collection.flatMap(
       _.find(BSONDocument(), Option.empty[T])
         .cursor[T](ReadPreference.Primary)
-        .collect[Seq](limit, Cursor.FailOnError[Seq[T]]())
+        .collect[Seq](blogsLimit, Cursor.FailOnError[Seq[T]]())
     )
   }
 

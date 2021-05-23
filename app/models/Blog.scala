@@ -8,7 +8,8 @@ import reactivemongo.bson.{ BSONObjectID, _ }
 import reactivemongo.play.json._
 
 case class Blog(
-    id: Option[BSONObjectID],
+    // id must start with _ for the BSON object Id
+    _id: Option[BSONObjectID],
     title: String,
     blogPost: String,
     createdDate: Option[DateTime],
@@ -24,7 +25,7 @@ object Blog {
   implicit object BlogBSONReader extends BSONDocumentReader[Blog] {
     override def read(bson: BSONDocument): Blog = {
       Blog(
-        bson.getAs[BSONObjectID]("id"),
+        bson.getAs[BSONObjectID]("_id"),
         bson.getAs[String]("title").get,
         bson.getAs[String]("blogPost").get,
         bson.getAs[BSONDateTime]("createdDate").map(dt => new DateTime(dt.value)),
@@ -36,7 +37,7 @@ object Blog {
   implicit object BlogBSONWriter extends BSONDocumentWriter[Blog] {
     override def write(blog: Blog): BSONDocument = {
       BSONDocument(
-        "id"          -> blog.id,
+        "_id"         -> blog._id,
         "title"       -> blog.title,
         "blogPost"    -> blog.blogPost,
         "createdDate" -> blog.createdDate.map(date => BSONDateTime(date.getMillis)),

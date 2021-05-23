@@ -17,9 +17,16 @@ class BlogController @Inject()(
 ) extends BaseController {
 
   def getAllBlogs: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    blogRepository.findAll().map { blogs =>
-      Ok(Json.toJson(blogs))
-    }
+    blogRepository.findAll
+      .map {
+        case Seq() => NotFound("Empty response")
+        case blogs => Ok(Json.toJson(blogs))
+      }
+      .recover {
+        case e =>
+          e.printStackTrace()
+          InternalServerError(e.getMessage)
+      }
   }
 
   def createNewBlog: Action[JsValue] = Action.async(controllerComponents.parsers.json) {
@@ -30,9 +37,16 @@ class BlogController @Inject()(
           .fold(
             _ => Future.successful(BadRequest("Cannot parse the request body")),
             blog =>
-              blogRepository.create(blog).map { _ =>
-                Created(Json.toJson(blog))
-              }
+              blogRepository
+                .create(blog)
+                .map { _ =>
+                  Created(Json.toJson(blog))
+                }
+                .recover {
+                  case e =>
+                    e.printStackTrace()
+                    InternalServerError(e.getMessage)
+                }
           )
       }
   }
