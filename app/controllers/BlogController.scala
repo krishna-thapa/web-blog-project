@@ -1,6 +1,6 @@
 package controllers
 
-import models.Blog
+import forms.BlogPostForm
 import play.api.libs.json.{ JsValue, Json }
 import play.api.mvc.{ Action, AnyContent, BaseController, ControllerComponents, Request }
 import repositories.BlogRepository
@@ -19,7 +19,7 @@ class BlogController @Inject()(
   def getAllBlogs: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     blogRepository.findAll
       .map {
-        case Seq() => NotFound("Empty response")
+        case Seq() => NotFound("Database is empty!")
         case blogs => Ok(Json.toJson(blogs))
       }
       .recover {
@@ -32,22 +32,24 @@ class BlogController @Inject()(
   def createNewBlog: Action[JsValue] = Action.async(controllerComponents.parsers.json) {
     implicit request: Request[JsValue] =>
       {
-        request.body
-          .validate[Blog]
-          .fold(
-            _ => Future.successful(BadRequest("Cannot parse the request body")),
-            blog =>
-              blogRepository
-                .create(blog)
-                .map { _ =>
-                  Created(Json.toJson(blog))
-                }
-                .recover {
-                  case e =>
-                    e.printStackTrace()
-                    InternalServerError(e.getMessage)
-                }
-          )
+        BlogPostForm.blogPostForm.bindFromRequest.fold(
+          formWithError => {
+            Future.successful(
+              BadRequest(s"Cannot parse the request body with an error: $formWithError")
+            )
+          },
+          blogPostForm =>
+            blogRepository
+              .createBlog(blogPostForm)
+              .map { result =>
+                Created(s"Response with created record number: ${result.n}")
+              }
+              .recover {
+                case e =>
+                  e.printStackTrace()
+                  InternalServerError(e.getMessage)
+              }
+        )
       }
   }
 }

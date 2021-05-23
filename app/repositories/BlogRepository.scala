@@ -1,5 +1,6 @@
 package repositories
 
+import forms.BlogPostForm
 import models.Blog
 import org.joda.time.DateTime
 import play.api.Configuration
@@ -20,10 +21,15 @@ class BlogRepository @Inject()(
   override def mongoDBName: String = config.get[String]("mongodb.dbName")
   override def blogsLimit: Int     = config.get[Int]("mongodb.limit")
 
-  def create(request: Blog): Future[WriteResult] = {
-    collection.flatMap(
-      _.insert(ordered = false)
-        .one(request.copy(createdDate = Some(new DateTime()), updatedDate = Some(new DateTime())))
+  def createBlog(request: BlogPostForm): Future[WriteResult] = {
+    create(
+      Blog(
+        None,
+        request.title,
+        request.blogPost,
+        createdDate = Some(new DateTime()),
+        updatedDate = Some(new DateTime())
+      )
     )
   }
 }

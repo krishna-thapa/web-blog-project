@@ -14,7 +14,7 @@ case class Blog(
     blogPost: String,
     createdDate: Option[DateTime],
     updatedDate: Option[DateTime]
-)
+) extends WithDate
 
 object Blog {
   // Format macro will inspect the Blog case class fields and produce a JSON

@@ -50,12 +50,10 @@ GET     /blog                       controllers.BlogController.getAllBlogs
 #      required: true
 #      description: New blog post form
 #      schema:
-#        $ref: '#/definitions/models.Blog'
+#        $ref: '#/definitions/forms.BlogPostForm'
 #  responses:
 #    200:
-#      description: success
-#      schema:
-#        $ref: '#/definitions/models.Blog'
+#      description: success with response code
 #    400:
 #      description: Bad request (have to be in validated form request)
 #    500:
