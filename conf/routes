@@ -52,7 +52,7 @@ GET     /blog                       controllers.BlogController.getAllBlogs
 #    400:
 #      description: Bad request (have to be in validated blog id)
 #    404:
-#      description: empty resposne from database
+#      description: empty response from database
 #    500:
 #      description: internal server error (connection issues)
 ###
@@ -80,3 +80,21 @@ GET     /blog/:id                   controllers.BlogController.getSelectedBlog(i
 #      description: internal server error (connection issues)
 ###
 POST    /blog                       controllers.BlogController.createNewBlog
+
+###
+#  summary: Delete the selected blog from the database
+#  description: >
+#   Have to send the valid blog id to delete the right one
+#  tags:
+#    - Blog
+#  responses:
+#    200:
+#      description: success
+#    400:
+#      description: Bad request (have to be in validated blog id)
+#    404:
+#      description: empty response from database
+#    500:
+#      description: internal server error (connection issues)
+###
+DELETE  /blog/:id                   controllers.BlogController.deleteBlog(id: String)

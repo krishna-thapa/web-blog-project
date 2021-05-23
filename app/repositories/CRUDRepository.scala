@@ -29,7 +29,7 @@ trait CRUDRepository[T <: WithDate] extends Logging {
       implicit conWrite: BSONDocumentWriter[T],
       conRead: BSONDocumentReader[T]
   ): Future[Seq[T]] = collection.flatMap(
-    _.find(BSONDocument(), Option.empty[T])
+    _.find(BSONDocument.empty)
       .sort(BSONDocument("createdDate" -> -1))
       .cursor[T]()
       .collect[Seq](blogsLimit, Cursor.FailOnError[Seq[T]]())
@@ -39,7 +39,7 @@ trait CRUDRepository[T <: WithDate] extends Logging {
   def findOne(
       id: BSONObjectID
   )(implicit conWrite: BSONDocumentWriter[T], conRead: BSONDocumentReader[T]): Future[Option[T]] = {
-    collection.flatMap(_.find(BSONDocument("_id" -> id), Option.empty[T]).one[T])
+    collection.flatMap(_.find(BSONDocument("_id" -> id)).one[T])
   }
 
   // Create a new blog in the collection
@@ -49,6 +49,13 @@ trait CRUDRepository[T <: WithDate] extends Logging {
         .one(
           blog
         )
+    )
+  }
+
+  // Delete the blog post
+  def delete(id: BSONObjectID): Future[WriteResult] = {
+    collection.flatMap(
+      _.delete().one(BSONDocument("_id" -> id))
     )
   }
 }

@@ -56,4 +56,18 @@ class BlogController @Inject()(
         )
 
   }
+
+  def deleteBlog(id: String): Action[AnyContent] = Action.async {
+    implicit request: Request[AnyContent] =>
+      log.info(s"Executing deleteBlog with the request id: $id")
+
+      BSONObjectID.parse(id) match {
+        case Success(objectId) =>
+          blogService.deleteBlogService(objectId).errorRecover
+        case Failure(exception) =>
+          Future.successful(
+            BadRequest(s"Cannot parse the id: $id, error with: ${exception.getMessage}")
+          )
+      }
+  }
 }

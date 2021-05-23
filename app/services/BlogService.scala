@@ -4,7 +4,7 @@ import forms.BlogPostForm
 import models.Blog.laxJsonWriter
 import play.api.libs.json.{ JsObject, Json }
 import play.api.mvc.Result
-import play.api.mvc.Results.{ Created, NotFound, Ok }
+import play.api.mvc.Results.{ BadRequest, Created, NotFound, Ok }
 import reactivemongo.api.bson.BSONObjectID
 import repositories.BlogRepository
 
@@ -40,6 +40,16 @@ class BlogService @Inject()(
       .createBlog(blogPostForm)
       .map { result =>
         Created(s"Response with created record number: ${result.n}")
+      }
+  }
+
+  def deleteBlogService(objectId: BSONObjectID): Future[Result] = {
+    blogRepository
+      .delete(objectId)
+      .map { response =>
+        if (response.writeErrors.isEmpty)
+          Ok(s"Success on deletion of blog with id: ${objectId.stringify}")
+        else BadRequest(s"Error on deletion: ${response.writeErrors}")
       }
   }
 }
