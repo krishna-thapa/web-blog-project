@@ -66,6 +66,29 @@ GET     /blog/:id                   controllers.BlogController.getSelectedBlog(i
 #      schema:
 #        $ref: '#/definitions/forms.BlogPostForm'
 #  responses:
+#    201:
+#      description: success with response code
+#    400:
+#      description: Bad request (have to be in validated form request)
+#    500:
+#      description: internal server error (connection issues)
+###
+POST    /blog                       controllers.BlogController.createNewBlog()
+
+###
+#  summary: Update a existing blog post in the MongoDb database under "blogs" collection
+#  description: >
+#   Will update the blog with the new content and new updated date
+#  tags:
+#    - Blog
+#  parameters:
+#    - name: body
+#      in: body
+#      required: true
+#      description: Updated blog post form with the blog id
+#      schema:
+#        $ref: '#/definitions/forms.UpdateBlogForm'
+#  responses:
 #    200:
 #      description: success with response code
 #    400:
@@ -73,7 +96,7 @@ GET     /blog/:id                   controllers.BlogController.getSelectedBlog(i
 #    500:
 #      description: internal server error (connection issues)
 ###
-POST    /blog                       controllers.BlogController.createNewBlog
+PUT    /blog                       controllers.BlogController.updateBlog()
 
 ###
 #  summary: Delete the selected blog from the database

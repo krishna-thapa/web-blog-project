@@ -1,16 +1,13 @@
 package controllers
 
-import forms.BlogPostForm
+import forms.{ BlogPostForm, UpdateBlogForm }
 import play.api.libs.json.JsValue
 import play.api.mvc._
-import reactivemongo.api.bson.BSONObjectID
 import services.BlogService
-import utils.FutureErrorHandler.ErrorRecover
 import utils.Logging
 
 import javax.inject.{ Inject, Singleton }
 import scala.concurrent.{ ExecutionContext, Future }
-import scala.util.{ Failure, Success }
 
 @Singleton
 class BlogController @Inject()(
@@ -23,24 +20,17 @@ class BlogController @Inject()(
   def getAllBlogs: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     log.info(s"Executing getAllBlogs method")
 
-    blogService.allBlogService.errorRecover
+    blogService.allBlogService
   }
 
   def getSelectedBlog(id: String): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       log.info(s"Executing getSelectedBlog with the request id: $id")
 
-      BSONObjectID.parse(id) match {
-        case Success(objectId) =>
-          blogService.getBlogService(objectId).errorRecover
-        case Failure(exception) =>
-          Future.successful(
-            BadRequest(s"Cannot parse the id: $id, error with: ${exception.getMessage}")
-          )
-      }
+      blogService.parseBSONObjectId(id, blogService.getBlogService)
   }
 
-  def createNewBlog: Action[JsValue] = Action.async(controllerComponents.parsers.json) {
+  def createNewBlog(): Action[JsValue] = Action.async(controllerComponents.parsers.json) {
     implicit request: Request[JsValue] =>
       log.info(s"Executing createNewBlog method")
 
@@ -52,22 +42,36 @@ class BlogController @Inject()(
               BadRequest(s"Cannot parse the request body with an error: $formWithError")
             )
           },
-          blogPostForm => blogService.createBlogService(blogPostForm).errorRecover
+          blogPostForm => blogService.createBlogService(blogPostForm)
         )
 
+  }
+
+  def updateBlog(): Action[JsValue] = Action.async(controllerComponents.parsers.json) {
+    implicit request: Request[JsValue] =>
+      log.info(s"Executing updateBlog method")
+
+      UpdateBlogForm.updateBlogPostForm
+        .bindFromRequest()
+        .fold(
+          formWithError => {
+            Future.successful(
+              BadRequest(s"Cannot parse the request body with an error: $formWithError")
+            )
+          },
+          updateBlogPostForm => {
+            implicit val updatedForm: BlogPostForm = updateBlogPostForm.blogPostForm
+            blogService.parseBSONObjectId(
+              updateBlogPostForm._id,
+              blogService.updateBlogService
+            )
+          }
+        )
   }
 
   def deleteBlog(id: String): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       log.info(s"Executing deleteBlog with the request id: $id")
-
-      BSONObjectID.parse(id) match {
-        case Success(objectId) =>
-          blogService.deleteBlogService(objectId).errorRecover
-        case Failure(exception) =>
-          Future.successful(
-            BadRequest(s"Cannot parse the id: $id, error with: ${exception.getMessage}")
-          )
-      }
+      blogService.parseBSONObjectId(id, blogService.deleteBlogService)
   }
 }

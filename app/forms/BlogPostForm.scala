@@ -1,6 +1,6 @@
 package forms
 
-import play.api.data.Form
+import play.api.data.{ Form, Mapping }
 import play.api.data.Forms.{ mapping, nonEmptyText, text }
 
 case class BlogPostForm(
@@ -9,10 +9,12 @@ case class BlogPostForm(
 )
 object BlogPostForm {
 
+  val blogPostFormMap: Mapping[BlogPostForm] = mapping(
+    "title"    -> nonEmptyText.verifying(_.nonEmpty),
+    "blogPost" -> text.verifying(_.nonEmpty)
+  )(BlogPostForm.apply)(BlogPostForm.unapply)
+
   val blogPostForm: Form[BlogPostForm] = Form {
-    mapping(
-      "title"    -> nonEmptyText.verifying(_.nonEmpty),
-      "blogPost" -> text.verifying(_.nonEmpty)
-    )(BlogPostForm.apply)(BlogPostForm.unapply)
+    blogPostFormMap
   }
 }

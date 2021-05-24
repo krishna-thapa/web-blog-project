@@ -1,10 +1,11 @@
 ## Goal for the first milestone
 
 1. Build an asynchronous & non-blocking REST application using the Play framework and reactive mongo plugin
-2. Basic API that allows us to perform the basic CRUD operations for the data stored in a mongo database.
+2. Basic API that allows to perform the basic CRUD operations for the data stored in a mongo database.
 3. Use the docker compose file to build and run the containers for mongoDb and mongo express to view database content in UI
 4. Implement Swagger API management tool to perform all the endpoints operation 
-5. Implement test-container dependency to create test suite cases using docker container for mongo
+5. Implement test-container dependency to create test suite cases using docker container for mongodb
+6. Use of play form to validate the request form while creating and updating a new blog post
 
 ### Future ideas to implement
 - Add simple JWT authorization layer
@@ -34,6 +35,7 @@ In addition to performing standard CRUD operations, it also supports querying th
 - Scala 2.13
 - Sbt 1.13
 - Play 2.8
+- ReactiveMongo
 - Docker images:
   - mongo
   - mongo-express
@@ -79,17 +81,6 @@ db.person.stats()
 - Should have a CRUD operation for the project
 
 ## Know issues
-1. Disable auto clean-up imports in Intellij for this project
-  - Look for the release note for this version of [ReactiveMongo 0.20.13](http://reactivemongo.org/releases/0.1x/documentation/release-details.html)
-  - Following imports should be in the model class
-```
-# Used for the JSON/BSON conversion
-import reactivemongo.play.json._
-
-# Used for the Joda DateTime to BSON type conversion 
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
-```
-2. At the moment, if the docker container of MongoDb is initialized with the username and password, then the ReactiveMongo won't connect even using the required url.
+1. At the moment, if the docker container of MongoDb is initialized with the username and password, then the ReactiveMongo won't connect even using the required url.
 Might need to look into more, see the document regarding [connection](http://reactivemongo.org/releases/1.0/documentation/tutorial/connect-database.html). 
    Hence, the environment variables for username and password are disabled in the docker-compose file.
