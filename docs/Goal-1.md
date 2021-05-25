@@ -6,6 +6,7 @@
 4. Implement Swagger API management tool to perform all the endpoints operation 
 5. Implement test-container dependency to create test suite cases using docker container for mongodb
 6. Use of play form to validate the request form while creating and updating a new blog post
+7. Use of Akka stream and integrate with Reactive mongo to upload JSON content to the database at the start-up of Play application
 
 ### Future ideas to implement
 - Add simple JWT authorization layer
@@ -79,6 +80,10 @@ db.person.stats()
 ### About the web project
 - Build a simple initial point for the blog application
 - Should have a CRUD operation for the project
+
+### Test used for the project:
+- Testing your application with [ScalaTest in Play](https://www.playframework.com/documentation/2.8.x/ScalaTestingWithScalaTest)
+- [testcontainers-scala](https://github.com/testcontainers/testcontainers-scala)
 
 ## Know issues
 1. At the moment, if the docker container of MongoDb is initialized with the username and password, then the ReactiveMongo won't connect even using the required url.

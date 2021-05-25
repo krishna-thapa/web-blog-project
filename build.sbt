@@ -11,15 +11,20 @@ scalafmtOnCompile := true
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, SwaggerPlugin)
   .settings(
-    libraryDependencies ++= dependencies ++ mongoDependencies
+    libraryDependencies ++= dependencies ++ mongoDependencies,
+    // Run tests in a separate JVM from sbt.
+    // This allows for graceful shutdown of containers once the tests have finished running
+    Test / fork := true
   )
 
 swaggerDomainNameSpaces := Seq("models", "forms")
 
 lazy val dependencies = Seq(
   guice,
-  "org.webjars"            % "swagger-ui"          % "3.43.0",
-  "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
+  "org.webjars"            % "swagger-ui"                      % "3.43.0",
+  "org.scalatestplus.play" %% "scalatestplus-play"             % "5.1.0" % Test,
+  "com.dimafeng"           %% "testcontainers-scala-scalatest" % "0.38.8" % Test,
+  "com.dimafeng"           %% "testcontainers-scala-mongodb"   % "0.38.8" % Test
 )
 
 lazy val mongoDependencies = Seq(
