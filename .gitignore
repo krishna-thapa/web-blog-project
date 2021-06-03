@@ -5,3 +5,9 @@ target/
 .idea_modules
 .classpath
 .settings
+.DS_Store/
+
+# Front-end vue project
+node_modules/
+front-end-blog/package-lock.json
+/dist/
