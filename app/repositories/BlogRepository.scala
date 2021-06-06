@@ -12,8 +12,8 @@ import javax.inject.{ Inject, Singleton }
 import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
-class BlogRepository @Inject()(
-    implicit val executionContext: ExecutionContext,
+class BlogRepository @Inject() (implicit
+    val executionContext: ExecutionContext,
     val reactiveMongoApi: ReactiveMongoApi,
     config: Configuration
 ) extends CRUDRepository[Blog] {

@@ -14,8 +14,8 @@ import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.{ Failure, Success }
 
 @Singleton
-class BlogService @Inject()(
-    implicit executionContext: ExecutionContext,
+class BlogService @Inject() (implicit
+    executionContext: ExecutionContext,
     val blogRepository: BlogRepository
 ) {
 

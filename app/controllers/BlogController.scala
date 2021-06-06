@@ -10,8 +10,8 @@ import javax.inject.{ Inject, Singleton }
 import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
-class BlogController @Inject()(
-    implicit executionContext: ExecutionContext,
+class BlogController @Inject() (implicit
+    executionContext: ExecutionContext,
     val blogService: BlogService,
     val controllerComponents: ControllerComponents
 ) extends BaseController

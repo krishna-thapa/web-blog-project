@@ -115,3 +115,27 @@ PUT    /blog                       controllers.BlogController.updateBlog()
 #      description: internal server error (connection issues)
 ###
 DELETE  /blog/:id                   controllers.BlogController.deleteBlog(id: String)
+
+###
+#  summary: Post a blog picture with the blog id
+#  description: >
+#   Store the uploaded blog picture as GridFS in MongoDB
+#  tags:
+#    - Picture attachment
+#  consumes:
+#    - multipart/form-data
+#  parameters:
+#    - name: upload
+#      in: formData
+#      type: file
+#      required: true
+#      description: Picture to upload for the blog post
+#  responses:
+#    200:
+#      description: success with response code
+#    400:
+#      description: Bad request (Has to be in picture format)
+#    500:
+#      description: internal server error (connection issues)
+###
+POST    /blog/:id/picture           controllers.GridFsController.saveBlogPicture(id: String)

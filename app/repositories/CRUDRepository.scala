@@ -25,8 +25,8 @@ trait CRUDRepository[T <: WithDate] extends Logging {
   }
 
   // Get all the records from collection blogs
-  def findAll(
-      implicit conWrite: BSONDocumentWriter[T],
+  def findAll(implicit
+      conWrite: BSONDocumentWriter[T],
       conRead: BSONDocumentReader[T]
   ): Future[Seq[T]] = collection.flatMap(
     _.find(BSONDocument.empty)
@@ -53,8 +53,8 @@ trait CRUDRepository[T <: WithDate] extends Logging {
   }
 
   // Update the blog post
-  def update(id: BSONObjectID, blog: T)(
-      implicit conWrite: BSONDocumentWriter[T]
+  def update(id: BSONObjectID, blog: T)(implicit
+      conWrite: BSONDocumentWriter[T]
   ): Future[WriteResult] = {
     collection.flatMap(
       _.update(ordered = false).one(BSONDocument("_id" -> id), blog)
