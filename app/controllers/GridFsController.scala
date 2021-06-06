@@ -1,9 +1,9 @@
 package controllers
 
 import javax.inject.{ Inject, Singleton }
-import play.api.mvc.{ AbstractController, Action, ControllerComponents, MultipartFormData }
+import play.api.mvc.{ AbstractController, Action, ControllerComponents, MultipartFormData, Result }
 import play.modules.reactivemongo.{ MongoController, ReactiveMongoApi, ReactiveMongoComponents }
-import reactivemongo.api.bson.{ BSONDocument, BSONObjectID, BSONValue }
+import reactivemongo.api.bson.{ BSONDocument, BSONValue }
 import reactivemongo.api.gridfs.ReadFile
 import utils.FutureErrorHandler.ErrorRecover
 import utils.Logging
@@ -49,21 +49,37 @@ class GridFsController @Inject() (
         request.body.files.headOption
       fileOption match {
         case Some(file) =>
-          log.info(s"File: ${file.filename} with content type of: ${file.contentType}")
-          log.info(s"File content type of: ${file.dispositionType}")
-
-          (for {
-            gfs       <- gridFS
-            blogExist <- gfs.find(BSONDocument("blogId" -> blogId)).headOption
-            _         <- gfs.remove(blogExist.get.id)
-            _ <- gfs.update(
-              file.ref.id,
-              BSONDocument(
-                f"$$set" -> BSONDocument("blogId" -> blogId)
-              )
-            )
-          } yield Ok("Successfully uploaded the blog picture")).errorRecover
+          log.info(s"Received file: ${file.filename} with content type of: ${file.contentType}")
+          removeBlogPicture(blogId).flatMap(_ => addOrReplaceBlogPicture(blogId, file)).errorRecover
         case _ => Future.successful(NotFound("Select the picture to upload"))
       }
     }
+
+  private def addOrReplaceBlogPicture(
+      blogId: String,
+      file: MultipartFormData.FilePart[ReadFile[BSONValue, BSONDocument]]
+  ): Future[Result] = {
+    for {
+      gfs <- gridFS
+      _ <- gfs.update(
+        file.ref.id,
+        BSONDocument(
+          f"$$set" -> BSONDocument("blogId" -> blogId)
+        )
+      )
+    } yield Ok("Successfully uploaded the blog picture")
+  }
+
+  private def removeBlogPicture(blogId: String): Future[Unit] = {
+    for {
+      gfs         <- gridFS
+      blogPicture <- gfs.find(BSONDocument("blogId" -> blogId)).headOption
+    } yield blogPicture.fold(
+      log.info(s"Picture not found for blog id: $blogId")
+    ) { picture =>
+      log.info(s"Existing picture has been removed for blog id: $blogId")
+      // Return Unit once the picture is removed from mongoDb
+      gfs.remove(picture.id)
+    }
+  }
 }

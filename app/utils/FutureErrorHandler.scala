@@ -13,7 +13,7 @@ object FutureErrorHandler extends Logging {
   ) {
     def errorRecover: Future[Result] = {
       futureResult.recover { case e =>
-        log.error(s"Internal Error on getSelectedBlog method: ${e.getMessage}")
+        log.error(s"Internal Error on responding future of result method: ${e.getMessage}")
         InternalServerError(e.getMessage)
       }
     }
