@@ -8,16 +8,15 @@ import play.api.mvc.Results.{ BadRequest, Created, NotFound, Ok }
 import reactivemongo.api.bson.BSONObjectID
 import repositories.BlogRepository
 import utils.FutureErrorHandler.ErrorRecover
-
 import javax.inject.{ Inject, Singleton }
+
 import scala.concurrent.{ ExecutionContext, Future }
-import scala.util.{ Failure, Success }
 
 @Singleton
 class BlogService @Inject() (implicit
-    executionContext: ExecutionContext,
+    val executionContext: ExecutionContext,
     val blogRepository: BlogRepository
-) {
+) extends CommonService {
 
   def allBlogService: Future[Result] = {
     blogRepository.findAll.map {
@@ -72,17 +71,4 @@ class BlogService @Inject() (implicit
       }
   }
 
-  def parseBSONObjectId(
-      id: String,
-      callService: BSONObjectID => Future[Result]
-  ): Future[Result] = {
-    BSONObjectID.parse(id) match {
-      case Success(objectId) =>
-        callService(objectId).errorRecover
-      case Failure(exception) =>
-        Future.successful(
-          BadRequest(s"Cannot parse the id: $id, error with: ${exception.getMessage}")
-        )
-    }
-  }
 }

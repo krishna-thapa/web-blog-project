@@ -138,4 +138,40 @@ DELETE  /blog/:id                   controllers.BlogController.deleteBlog(id: St
 #    500:
 #      description: internal server error (connection issues)
 ###
-POST    /blog/:id/picture           controllers.GridFsController.saveBlogPicture(id: String)
+POST    /blog/picture/:id           controllers.GridFsController.saveBlogPicture(id: String)
+
+###
+#  summary: Delete the selected attched picture from the GridFs index
+#  description: >
+#   Have to send the valid attached pictured id to delete the right one
+#  tags:
+#    - Picture attachment
+#  responses:
+#    200:
+#      description: success
+#    400:
+#      description: Bad request (have to be in validated attached picture id)
+#    404:
+#      description: empty response from database
+#    500:
+#      description: internal server error (connection issues)
+###
+DELETE  /blog/picture/:id            controllers.GridFsController.removeAttachedPicture(id: String)
+
+###
+#  summary: Get the selected attched picture from the GridFs index
+#  description: >
+#   Have to send the valid attached pictured id to delete the right one
+#  tags:
+#    - Picture attachment
+#  responses:
+#    200:
+#      description: success
+#    400:
+#      description: Bad request (have to be in validated attached picture id)
+#    404:
+#      description: empty response from database
+#    500:
+#      description: internal server error (connection issues)
+###
+GET  /blog/picture/:id              controllers.GridFsController.getAttachedPicture(id: String)
