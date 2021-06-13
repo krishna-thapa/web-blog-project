@@ -6,7 +6,10 @@
 4. Implement Swagger API management tool to perform all the endpoints operation 
 5. Implement test-container dependency to create test suite cases using docker container for mongodb
 6. Use of play form to validate the request form while creating and updating a new blog post
-7. Use of Akka stream and integrate with Reactive mongo to upload JSON content to the database at the start-up of Play application
+7. Implement MongoDB GridFS to store the picture attachment as a file 
+8. Implement new endpoints to upload, get and delete the picture attachment for each blog id 
+9. Update the existing CRUD endpoints for each blog with picture attachment 
+10. Validate the file attachment with the picture file content type only(.png, .jpeg) see more
 
 ### Future ideas to implement
 - Add simple JWT authorization layer
@@ -14,6 +17,9 @@
 - Each blog can have title image background that need to be stored in mongo as GridFS
 - Start Front-end project using Vue3 and Typescript 
 - Added a simple github action job to test when merged to master
+- Use of Akka stream and integrate with Reactive mongo to upload JSON content to the database at the start-up of Play application
+- Add a text search functionality 
+- Add tags and likes for each blog
 
 ### About ReactiveMongo
 [ReactiveMongo](http://reactivemongo.org/) is an asynchronous and non-blocking Scala driver for MongoDB. 

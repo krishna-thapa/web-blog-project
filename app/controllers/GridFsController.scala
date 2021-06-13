@@ -64,7 +64,8 @@ class GridFsController @Inject() (
   private def getAttachment(id: BSONObjectID): Future[Result] = {
     gridFsAttachmentService.gridFS.flatMap { gfs =>
       val attachment = gfs.find(BSONDocument("_id" -> id))
-      serve(gfs)(attachment).errorRecover
+      // Content-Disposition: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
+      serve(gfs)(attachment, dispositionMode = "inline").errorRecover
     }
   }
 

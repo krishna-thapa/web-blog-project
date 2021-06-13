@@ -5,8 +5,8 @@ import play.api.libs.json.JsValue
 import play.api.mvc._
 import services.BlogService
 import utils.Logging
-
 import javax.inject.{ Inject, Singleton }
+
 import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
@@ -72,6 +72,8 @@ class BlogController @Inject() (implicit
   def deleteBlog(id: String): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       log.info(s"Executing deleteBlog with the request id: $id")
-      blogService.parseBSONObjectId(id, blogService.deleteBlogService)
+      blogService.gridFsAttachmentService
+        .removeBlogPicture(id)
+        .flatMap(_ => blogService.parseBSONObjectId(id, blogService.deleteBlogService))
   }
 }

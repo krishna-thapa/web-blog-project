@@ -18,6 +18,7 @@ class GridFsAttachmentService @Inject() (implicit
 ) extends AttachmentRepository
     with CommonService
     with Logging {
+
   /*
     Add a new picture in the GridFS index or update the existing with a new picture
    */
@@ -41,18 +42,28 @@ class GridFsAttachmentService @Inject() (implicit
     Only one picture at a time can be stored for each blog id
    */
   def removeBlogPicture(blogId: String): Future[Unit] = {
-    for {
-      gfs         <- gridFS
-      blogPicture <- gfs.find(BSONDocument("blogId" -> blogId)).headOption
-    } yield blogPicture.fold(
-      log.info(s"Picture not found for blog id: $blogId, saving a new picture in the index")
-    ) { picture =>
-      log.info(s"Existing picture has been removed for blog id: $blogId")
-      // Return Unit once the picture is removed from mongoDb
-      gfs.remove(picture.id)
+    existBlogPicture(blogId).map {
+      _.fold(
+        log.info(s"Picture not found for blog id: $blogId")
+      ) { picture =>
+        log.warn(s"Existing picture has been removed for blog id: $blogId")
+        // Return Unit once the picture is removed from mongoDb
+        gridFS.flatMap(_.remove(picture.id))
+      }
     }
   }
 
+  def getBlogPictureId(blogId: String) = {
+    existBlogPicture(blogId).map(_.map(_.id.asInstanceOf[BSONObjectID]))
+  }
+
+  private def existBlogPicture(blogId: String) = {
+    gridFS.flatMap(_.find(BSONDocument("blogId" -> blogId)).headOption)
+  }
+
+  /*
+    Remove the attachment picture from both (chunks and files) index for the given picture file id
+   */
   def removeAttachment(id: BSONObjectID): Future[Result] = {
     gridFS.flatMap { gfs =>
       gfs.remove(id).map(_ => Ok("Successfully removed the attached picture")).errorRecover

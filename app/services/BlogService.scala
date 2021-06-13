@@ -1,7 +1,6 @@
 package services
 
 import forms.BlogPostForm
-import models.Blog.laxJsonWriter
 import play.api.libs.json.{ JsObject, Json }
 import play.api.mvc.Result
 import play.api.mvc.Results.{ BadRequest, Created, NotFound, Ok }
@@ -9,31 +8,42 @@ import reactivemongo.api.bson.BSONObjectID
 import repositories.BlogRepository
 import utils.FutureErrorHandler.ErrorRecover
 import javax.inject.{ Inject, Singleton }
+import models.{ Blog, BlogDetails }
 
 import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
 class BlogService @Inject() (implicit
     val executionContext: ExecutionContext,
-    val blogRepository: BlogRepository
+    val blogRepository: BlogRepository,
+    val gridFsAttachmentService: GridFsAttachmentService
 ) extends CommonService {
 
   def allBlogService: Future[Result] = {
     blogRepository.findAll.map {
       case Seq() => NotFound("Database is empty!")
       case blogs =>
-        val jsObjects: Seq[JsObject] = blogs.map(blog => laxJsonWriter.writes(blog))
+        val jsObjects: Seq[JsObject] = blogs.map(blog => Blog.laxJsonWriter.writes(blog))
         Ok(Json.toJson(jsObjects))
     }.errorRecover
   }
 
   def getBlogService(objectId: BSONObjectID): Future[Result] = {
-    blogRepository
-      .findOne(objectId)
-      .map { blog =>
-        blog
-          .fold(NotFound("Database is empty!"))(b => Ok(Json.toJson(laxJsonWriter.writes(b))))
-      }
+    for {
+      getSingleBlog    <- blogRepository.findOne(objectId)
+      getBlogPictureId <- gridFsAttachmentService.getBlogPictureId(objectId.stringify)
+    } yield (getSingleBlog, getBlogPictureId) match {
+      case (Some(blog), pictureId) =>
+        Ok(Json.toJson(BlogDetails.laxJsonWriter.writes(BlogDetails(pictureId, blog))))
+      case (None, _) => NotFound("Database is empty!")
+    }
+
+//      blogRepository
+//      .findOne(objectId)
+//      .map { blog =>
+//        blog
+//          .fold(NotFound("Database is empty!"))(b => Ok(Json.toJson(laxJsonWriter.writes(b))))
+//      }
   }
 
   def createBlogService(blogPostForm: BlogPostForm): Future[Result] = {
