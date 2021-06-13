@@ -8,7 +8,7 @@ import reactivemongo.api.bson.BSONObjectID
 import repositories.BlogRepository
 import utils.FutureErrorHandler.ErrorRecover
 import javax.inject.{ Inject, Singleton }
-import models.{ Blog, BlogDetails }
+import models.Blog
 
 import scala.concurrent.{ ExecutionContext, Future }
 
@@ -34,16 +34,15 @@ class BlogService @Inject() (implicit
       getBlogPictureId <- gridFsAttachmentService.getBlogPictureId(objectId.stringify)
     } yield (getSingleBlog, getBlogPictureId) match {
       case (Some(blog), pictureId) =>
-        Ok(Json.toJson(BlogDetails.laxJsonWriter.writes(BlogDetails(pictureId, blog))))
+        Ok(
+          Json.toJson(
+            Blog.laxJsonWriter.writes(blog) +
+              // Added blog picture id to retrieve from GridFs
+              ("pictureId", Json.toJson(pictureId.map(_.stringify)))
+          )
+        )
       case (None, _) => NotFound("Database is empty!")
     }
-
-//      blogRepository
-//      .findOne(objectId)
-//      .map { blog =>
-//        blog
-//          .fold(NotFound("Database is empty!"))(b => Ok(Json.toJson(laxJsonWriter.writes(b))))
-//      }
   }
 
   def createBlogService(blogPostForm: BlogPostForm): Future[Result] = {

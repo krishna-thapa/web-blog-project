@@ -53,12 +53,8 @@ class GridFsAttachmentService @Inject() (implicit
     }
   }
 
-  def getBlogPictureId(blogId: String) = {
+  def getBlogPictureId(blogId: String): Future[Option[BSONObjectID]] = {
     existBlogPicture(blogId).map(_.map(_.id.asInstanceOf[BSONObjectID]))
-  }
-
-  private def existBlogPicture(blogId: String) = {
-    gridFS.flatMap(_.find(BSONDocument("blogId" -> blogId)).headOption)
   }
 
   /*

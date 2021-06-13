@@ -1,6 +1,7 @@
 package repositories
 
 import play.modules.reactivemongo.{ MongoController, ReactiveMongoComponents }
+import reactivemongo.api.bson.BSONDocument
 import utils.Logging
 
 import scala.concurrent.{ ExecutionContext, Future }
@@ -27,4 +28,9 @@ trait AttachmentRepository extends ReactiveMongoComponents with Logging {
       println("Error while creating index for GridFS: " + error.getMessage)
       throw error
     }
+
+  def existBlogPicture(blogId: String) = {
+    gridFS.flatMap(_.find(BSONDocument("blogId" -> blogId)).headOption)
+  }
+
 }
