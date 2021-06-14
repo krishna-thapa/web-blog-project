@@ -1,7 +1,7 @@
 package services
 
 import javax.inject.Inject
-import play.api.mvc.Results.Ok
+import play.api.mvc.Results.{ BadRequest, Ok, UnsupportedMediaType }
 import play.api.mvc.{ MultipartFormData, Result }
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.bson.{ BSONDocument, BSONObjectID, BSONValue }
@@ -53,6 +53,9 @@ class GridFsAttachmentService @Inject() (implicit
     }
   }
 
+  /*
+    Get the attached BSON object Id of the requested blog id
+   */
   def getBlogPictureId(blogId: String): Future[Option[BSONObjectID]] = {
     existBlogPicture(blogId).map(_.map(_.id.asInstanceOf[BSONObjectID]))
   }
@@ -64,5 +67,30 @@ class GridFsAttachmentService @Inject() (implicit
     gridFS.flatMap { gfs =>
       gfs.remove(id).map(_ => Ok("Successfully removed the attached picture")).errorRecover
     }
+  }
+
+  def addImageAttachment(
+      blogId: String,
+      file: MultipartFormData.FilePart[ReadFile[BSONValue, BSONDocument]]
+  ): Future[Result] = {
+    file.contentType
+      .fold[Future[Result]](
+        Future.successful(
+          BadRequest(s"Couldn't find the content type of the attachment for the blogId: $blogId")
+        )
+      ) { mimeType =>
+        if (mimeType.startsWith("image")) {
+          removeBlogPicture(blogId)
+            .flatMap(_ => addOrReplaceBlogPicture(blogId, file))
+        } else {
+          val errorMessage: String =
+            s"Unsupported MediaType for blogId: $blogId with MIME type of ${file.contentType}"
+          log.error(errorMessage)
+          Future.successful(
+            UnsupportedMediaType(errorMessage)
+          )
+        }
+      }
+      .errorRecover
   }
 }

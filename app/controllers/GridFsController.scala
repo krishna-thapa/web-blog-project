@@ -42,9 +42,7 @@ class GridFsController @Inject() (
         case Some(file) =>
           log.info(s"Received file: ${file.filename} with content type of: ${file.contentType}")
           gridFsAttachmentService
-            .removeBlogPicture(blogId)
-            .flatMap(_ => gridFsAttachmentService.addOrReplaceBlogPicture(blogId, file))
-            .errorRecover
+            .addImageAttachment(blogId, file)
         case _ => Future.successful(NotFound("Select the picture to upload"))
       }
     }
