@@ -9,9 +9,10 @@ import play.api.mvc.{
   MultipartFormData,
   Result
 }
-import play.modules.reactivemongo.{ MongoController, ReactiveMongoApi, ReactiveMongoComponents }
+import play.modules.reactivemongo.{ ReactiveMongoApi, ReactiveMongoComponents }
 import reactivemongo.api.bson.{ BSONDocument, BSONObjectID, BSONValue }
 import reactivemongo.api.gridfs.ReadFile
+import repositories.MongoControllerRefactored
 import services.GridFsAttachmentService
 import utils.FutureErrorHandler.ErrorRecover
 import utils.Logging
@@ -26,7 +27,7 @@ class GridFsController @Inject() (
     val reactiveMongoApi: ReactiveMongoApi,
     gridFsAttachmentService: GridFsAttachmentService
 ) extends AbstractController(components)
-    with MongoController
+    with MongoControllerRefactored
     with ReactiveMongoComponents
     with Logging {
 
@@ -41,8 +42,7 @@ class GridFsController @Inject() (
       fileOption match {
         case Some(file) =>
           log.info(s"Received file: ${file.filename} with content type of: ${file.contentType}")
-          gridFsAttachmentService
-            .addImageAttachment(blogId, file)
+          gridFsAttachmentService.addImageAttachment(blogId, file)
         case _ => Future.successful(NotFound("Select the picture to upload"))
       }
     }
@@ -63,7 +63,7 @@ class GridFsController @Inject() (
     gridFsAttachmentService.gridFS.flatMap { gfs =>
       val attachment = gfs.find(BSONDocument("_id" -> id))
       // Content-Disposition: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
-      serve(gfs)(attachment, dispositionMode = "inline").errorRecover
+      serve(gfs)(attachment).errorRecover
     }
   }
 

@@ -1,6 +1,6 @@
 package repositories
 
-import play.modules.reactivemongo.{ MongoController, ReactiveMongoComponents }
+import play.modules.reactivemongo.ReactiveMongoComponents
 import reactivemongo.api.bson.BSONDocument
 import utils.Logging
 
@@ -17,7 +17,7 @@ trait AttachmentRepository extends ReactiveMongoComponents with Logging {
     Please note that you should really consider reading http://www.mongodb.org/display/DOCS/Indexes
     before doing this, especially in production.
    */
-  def gridFS: Future[MongoController.GridFS] =
+  def gridFS: Future[MongoControllerRefactored.GridFS] =
     (for {
       attachments <- reactiveMongoApi.asyncGridFS
       _ <- attachments.ensureIndex().map { index =>
